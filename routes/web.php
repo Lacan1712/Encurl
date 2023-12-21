@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 //rota para o home
-Route::get('/home', function () {
+Route::get('/', function () {
     return view('home_page');
 })->name('home');
 

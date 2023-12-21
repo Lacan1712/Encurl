@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use DateTime;
+use DateTimeZone;
 class Main extends Controller
 {
     /**
@@ -23,27 +25,36 @@ class Main extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Armazene o link encurtado.
      */
     public function store($origin_url, $shortLink)
     {
-        //Gerar ID único para a tabela
-        $randomString = md5(uniqid());
-        $numericOnly = preg_replace('/[^0-9]/', '', $randomString);
-        $threeDigits = substr($numericOnly, 0, 3);
+        /*Gerar ID único para a tabela*/
+        //$randomString = md5(uniqid());
+        //$numericOnly = preg_replace('/[^0-9]/', '', $randomString);
+        //$threeDigits = substr($numericOnly, 0, 3);
 
-        //Guarando em arrays as URL's
+        //Obtaendo timezone do servidor
+        $timezone_servidor = date_default_timezone_get();
+
+        //Cria o objeto de data
+        $hora_local_servidor = new DateTime('now', new DateTimeZone($timezone_servidor));
+
+
+
+        //Guardando em arrays as URL's
         $dados = [
-            'ID' => $threeDigits,
-            'ORIGIN_URL' => $origin_url,
-            'SHORT_URL' => $shortLink,
+            //'ID' => $threeDigits,
+            'long_url' => $origin_url,
+            'short_url' => $shortLink,
+            'created_at' => (string)$hora_local_servidor->format('Y-m-d H:i:s'),
         ];
 
         $consulta = $this->show((string)$origin_url);
 
         if($consulta === null){
             //Função para armazenar o link original e o link encurtado
-            DB::insert('INSERT INTO shortlink VALUES (:ID, :ORIGIN_URL, :SHORT_URL)', $dados);
+            DB::insert('INSERT INTO shortlink(long_url,short_url,created_at) VALUES (:long_url, :short_url, :created_at)', $dados);
 
         }else{
             return 0;
@@ -103,26 +114,26 @@ class Main extends Controller
     }
 
     //Função de retorno da URL encurtada
-    public function encurl(Request $request){
-            //Armazena a url original
-            $origin_url = $request->input('origin-url');
+public function encurl(Request $request){
+        //Armazena a url original
+        $origin_url = $request->input('origin-url');
 
-            //Validação para o campo URL
-            $validation = $request->validate([
-                    "origin-url" => 'required'
-                ]);
+        //Validação para o campo URL
+        $validation = $request->validate([
+                "origin-url" => 'required'
+            ]);
 
-            //Armazena o link encurtado
-            $shortLink = $this->hashUrl($origin_url);
+        //Armazena o link encurtado
+         $shortLink = $this->hashUrl($origin_url);
 
-            //Função de insert na tabela
-            if($this->store($origin_url, $shortLink) === 0){
-                return view('home_page',['mensagem' => 'ESSE LINK JÁ ESTÁ ENCURTADO']);
-            }else{
-                return view('home_page',['mensagem' => 'localhost:8000/'.$shortLink]);
-            }
+        //Função de insert na tabela
+        if($this->store($origin_url, $shortLink) === 0){
+            return view('home_page',['mensagem' => 'ESSE LINK JÁ ESTÁ ENCURTADO: https://cut.rr.sebrae.com.br/'.$shortLink]);
+        }else{
+            return view('home_page',['mensagem' => 'https://cut.rr.sebrae.com.br/'.$shortLink]);
+        }
 
-            return redirect()->route('home');
+        return redirect()->route('home');
     }
 
     //Função de redirecionamento da URL encurtada
