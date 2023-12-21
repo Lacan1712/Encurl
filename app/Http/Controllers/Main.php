@@ -62,10 +62,9 @@ class Main extends Controller
         ];
 
         // Verifica a duplicidade
-        //("SELECT long_url FROM shortlink WHERE long_url = :CONSULTA", $dados);
-        $resultado = shortlink::where($dados)->get();
+        $resultado = shortlink::where($dados)->first(); //("SELECT long_url FROM shortlink WHERE long_url = :CONSULTA", $dados);
         if (!empty($resultado)) {
-            return $resultado[0]->long_url;
+            return $resultado->short_url;
         } else {
             return null;
         }
@@ -77,13 +76,13 @@ class Main extends Controller
     public function showOriginUrl($consulta)
     {
         $dados = [
-            'CONSULTA' => 'SB'.$consulta
+            'short_url' => 'SB'.$consulta
         ];
-
-        $resultado = DB::select("SELECT long_url FROM shortlink WHERE short_url = :CONSULTA", $dados);
+        
+        $resultado = shortlink::where($dados)->first(); //("SELECT long_url FROM shortlink WHERE short_url = :CONSULTA", $dados);
 
         if (!empty($resultado)) {
-            return $resultado[0]->long_url;
+            return $resultado->long_url;
         } else {
             return null;
         }
@@ -132,7 +131,7 @@ class Main extends Controller
     //Função de redirecionamento da URL encurtada
     public function redirectURL($ID){
 
-        $long_url = $this->showOriginUrl($ID);
+        (string)$long_url = $this->showOriginUrl($ID);
         header("Location: $long_url");
         exit();
 
