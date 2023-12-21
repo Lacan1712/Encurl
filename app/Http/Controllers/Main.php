@@ -6,33 +6,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use DateTime;
 use DateTimeZone;
+use App\Models\shortlink;
+
+
 class Main extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
     /**
      * Armazene o link encurtado.
      */
     public function store($origin_url, $shortLink)
     {
-        /*Gerar ID único para a tabela*/
-        //$randomString = md5(uniqid());
-        //$numericOnly = preg_replace('/[^0-9]/', '', $randomString);
-        //$threeDigits = substr($numericOnly, 0, 3);
+        /* Gerar ID único para a tabela
+
+            $randomString = md5(uniqid());
+            $numericOnly = preg_replace('/[^0-9]/', '', $randomString);
+            $threeDigits = substr($numericOnly, 0, 3);
+
+        */
 
         //Obtaendo timezone do servidor
         $timezone_servidor = date_default_timezone_get();
@@ -68,11 +58,12 @@ class Main extends Controller
     public function show($consulta)
     {
         $dados = [
-            "CONSULTA" => $consulta
+            "long_url" => $consulta
         ];
 
         // Verifica a duplicidade
-        $resultado = DB::select("SELECT long_url FROM shortlink WHERE long_url = :CONSULTA", $dados);
+        //("SELECT long_url FROM shortlink WHERE long_url = :CONSULTA", $dados);
+        $resultado = shortlink::where($dados)->get();
         if (!empty($resultado)) {
             return $resultado[0]->long_url;
         } else {
@@ -114,17 +105,19 @@ class Main extends Controller
     }
 
     //Função de retorno da URL encurtada
-public function encurl(Request $request){
+    public function encurl(Request $request){
         //Armazena a url original
         $origin_url = $request->input('origin-url');
+
+        //Cria o ID do link encurtado
+        $shortLink = $this->hashUrl($origin_url);
 
         //Validação para o campo URL
         $validation = $request->validate([
                 "origin-url" => 'required'
             ]);
 
-        //Armazena o link encurtado
-         $shortLink = $this->hashUrl($origin_url);
+        
 
         //Função de insert na tabela
         if($this->store($origin_url, $shortLink) === 0){
