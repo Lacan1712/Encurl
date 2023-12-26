@@ -4,46 +4,32 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\shortlink;
 class Main extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Armazena no banco o link original e encurtado, com verificação de duplicidade
      */
     public function store($origin_url, $shortLink)
     {
+        //Model
+        $table_shortLink = new shortlink();
         //Gerar ID único para a tabela
         $randomString = md5(uniqid());
         $numericOnly = preg_replace('/[^0-9]/', '', $randomString);
         $threeDigits = substr($numericOnly, 0, 3);
 
-        //Guarando em arrays as URL's
-        $dados = [
-            'ID' => $threeDigits,
-            'ORIGIN_URL' => $origin_url,
-            'SHORT_URL' => $shortLink,
-        ];
 
         $consulta = $this->show((string)$origin_url);
 
         if($consulta === null){
             //Função para armazenar o link original e o link encurtado
-            DB::insert('INSERT INTO shortlink VALUES (:ID, :ORIGIN_URL, :SHORT_URL)', $dados);
+            //DB::insert('INSERT INTO shortlink VALUES (:ID, :ORIGIN_URL, :SHORT_URL)', $dados);
+            $table_shortLink -> id = $threeDigits;
+            $table_shortLink -> long_url = $origin_url;
+            $table_shortLink -> short_url = $shortLink;
+            $table_shortLink -> save();
+
 
         }else{
             return 0;
