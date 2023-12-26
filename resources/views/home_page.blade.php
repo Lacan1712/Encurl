@@ -12,7 +12,20 @@
     <!--  ALERTA DE DUPLICIDADE-->
     @if(isset($mensagem))
         <script>
-            alert("{{ $mensagem }}");
+                // Criando elementos
+                var novoH4 = document.createElement("h4");
+                var novoLink = document.createElement("a");
+
+                // Adicionando conteúdo
+                novoH4.textContent = "{{$mensagem}}";
+                novoLink.href = "{{$endereco}}";
+                novoLink.textContent = "{{$endereco}}"
+
+                // Adiciona o elemento ao body
+                document.body.appendChild(novoH4);
+                document.body.appendChild(novoLink);
+
+
         </script>
     @endif
 
@@ -42,11 +55,5 @@
         <p>&copy; 2023 Sebrae RR. Todos os direitos reservados.
 	</p>
 </footer>
-
-
-<!--Injetando configurações javascript-->
-
-<script src="{{asset('/js/login.js')}}"> </script>
-  </body>
 
 </html>

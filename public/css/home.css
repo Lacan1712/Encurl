@@ -21,8 +21,12 @@ h1 {
 	margin-bottom: 70px;
 }
 
-h2 {
+h4 {
 	text-align: center;
+    color: #FF4B2B;
+    position: absolute;
+    top: 40%;
+    z-index: 3;
 }
 
 p {
@@ -38,10 +42,14 @@ span {
 }
 
 a {
-	color: #333;
-	font-size: 14px;
+    position: absolute;
+    top: 46%;
+    display: block;
+	color: #002efa;
+    font-weight: bold;
+	font-size: 20px;
 	text-decoration: none;
-	margin: 15px 0;
+    z-index: 4;
 }
 
 button {

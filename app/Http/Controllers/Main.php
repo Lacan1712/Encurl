@@ -110,9 +110,9 @@ class Main extends Controller
 
         //Função de insert na tabela com lik permanente
         if($this->store(trim($origin_url), trim($shortLink), $perma_link) === 0){
-            return view('home_page',['mensagem' => 'ESSE LINK JÁ ESTÁ ENCURTADO']);
+            return view('home_page',['mensagem' => 'Este link já foi encurtado','endereco' => 'localhost:8000/'.$shortLink]);
         }else{
-            return view('home_page',['mensagem' => 'localhost:8000/'.$shortLink]);
+            return view('home_page',['mensagem' => 'Link encurtado com sucesso:','endereco' => 'localhost:8000/'.$shortLink]);
         }
 
 
