@@ -47,9 +47,10 @@ class Main extends Controller
         ];
 
         // Verifica a duplicidade
-        $resultado = DB::select("SELECT long_url FROM shortlink WHERE long_url = :CONSULTA", $dados);
-        if (!empty($resultado)) {
-            return $resultado[0]->long_url;
+        //DB::select("SELECT long_url FROM shortlink WHERE long_url = :CONSULTA", $dados);
+        $resultado = shortlink::where('long_url',$consulta)->first();
+        if (!empty($resultado->long_url)) {
+             return $resultado->long_url;
         } else {
             return null;
         }
