@@ -26,6 +26,8 @@
 
 
 			<input type="url" placeholder="Encurtar URL"  name="origin-url"/>
+            <label for="checkBox">Link permanente:</label>
+            <input type="checkbox" name="perma-link" id="checkBox">
 			<button id="encurtar">ENCURTAR</button>
 
 		</form>

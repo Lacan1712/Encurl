@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('shortlink', function (Blueprint $table) {
-            $table->id();
-            $table->char('long_url',600);
-            $table->char('short_url',50);
-            $table->timestamps();
+        //Alterar tabela para VARCHAR
+        Schema::table("shortlink", function(Blueprint $table){
+            $table->string('long_url',600)->change();
+            $table->string('short_url',50)->change();
         });
     }
 
@@ -24,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('shortlink');
+        //
     }
 };

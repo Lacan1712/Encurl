@@ -10,7 +10,7 @@ class Main extends Controller
     /**
      * Armazena no banco o link original e encurtado, com verificação de duplicidade
      */
-    public function store($origin_url, $shortLink)
+    public function store($origin_url, $shortLink, $perma_link)
     {
         //Model
         $table_shortLink = new shortlink();
@@ -28,6 +28,7 @@ class Main extends Controller
             $table_shortLink -> id = $threeDigits;
             $table_shortLink -> long_url = $origin_url;
             $table_shortLink -> short_url = $shortLink;
+            $table_shortLink -> perma_link = $perma_link;
             $table_shortLink -> save();
 
 
@@ -91,25 +92,32 @@ class Main extends Controller
 
     //Função de retorno da URL encurtada
     public function encurl(Request $request){
-            //Armazena a url original
-            $origin_url = $request->input('origin-url');
 
-            //Validação para o campo URL
-            $validation = $request->validate([
-                    "origin-url" => 'required'
-                ]);
+        //Validação para o campo URL
+        $validation = $request->validate([
+            "origin-url" => 'required',
+            "perma-link" => 'nullable'
+        ]);
 
-            //Armazena o link encurtado
-            $shortLink = $this->hashUrl($origin_url);
+        //Armazena a url original
+        $origin_url = $request->input('origin-url');
 
-            //Função de insert na tabela
-            if($this->store($origin_url, $shortLink) === 0){
-                return view('home_page',['mensagem' => 'ESSE LINK JÁ ESTÁ ENCURTADO']);
-            }else{
-                return view('home_page',['mensagem' => 'localhost:8000/'.$shortLink]);
-            }
+        //Armazena o link encurtado
+        $shortLink = $this->hashUrl($origin_url);
 
-            return redirect()->route('home');
+        //Aramazena checkbox de link permanente
+        $perma_link = $request->has('perma-link');
+
+        //Função de insert na tabela com lik permanente
+        if($this->store(trim($origin_url), trim($shortLink), $perma_link) === 0){
+            return view('home_page',['mensagem' => 'ESSE LINK JÁ ESTÁ ENCURTADO']);
+        }else{
+            return view('home_page',['mensagem' => 'localhost:8000/'.$shortLink]);
+        }
+
+
+        return redirect()->route('home');
+
     }
 
     //Função de redirecionamento da URL encurtada
